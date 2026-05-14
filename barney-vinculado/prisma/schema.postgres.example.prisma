@@ -1,0 +1,12 @@
+// Exemplo para produção com PostgreSQL.
+// Para usar, troque o provider no schema.prisma principal para "postgresql"
+// e configure DATABASE_URL no .env com sua conexão Postgres.
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}

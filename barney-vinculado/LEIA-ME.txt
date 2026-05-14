@@ -1,0 +1,13 @@
+Barney AI Finance - HTML vinculado ao JavaScript
+
+Arquivos:
+- index.html: página principal com o layout e bibliotecas externas.
+- app.js: arquivo JavaScript vinculado ao HTML.
+
+Como usar:
+1. Mantenha index.html e app.js na mesma pasta.
+2. Abra o index.html no navegador ou hospede os dois arquivos juntos.
+3. Não renomeie app.js sem alterar a linha <script src="app.js" defer></script> no index.html.
+
+Observação importante de segurança:
+Esta versão continua sendo uma demonstração front-end. Ela valida campos e evita alguns bugs, mas não deve ser usada como sistema financeiro real sem backend. Para produção, implemente autenticação no servidor, banco de dados, criptografia de senha, confirmação real de pagamento e controle de permissões por API.

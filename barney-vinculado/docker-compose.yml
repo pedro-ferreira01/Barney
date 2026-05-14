@@ -1,0 +1,16 @@
+services:
+  postgres:
+    image: postgres:16
+    container_name: barney-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: barney
+      POSTGRES_PASSWORD: barney_password_change_me
+      POSTGRES_DB: barney
+    ports:
+      - "5432:5432"
+    volumes:
+      - barney_postgres:/var/lib/postgresql/data
+
+volumes:
+  barney_postgres:

@@ -1,0 +1,123 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id              String         @id @default(cuid())
+  name            String
+  email           String         @unique
+  passwordHash    String
+  role            String         @default("STUDENT")
+  phoneCipher     String?
+  cpfCipher       String?
+  isActive        Boolean        @default(true)
+  createdAt       DateTime       @default(now())
+  updatedAt       DateTime       @updatedAt
+  refreshTokens   RefreshToken[]
+  subscriptions   Subscription[]
+  transactions    Transaction[]
+  payments        Payment[]
+  fileAnalyses    FileAnalysis[]
+  auditLogs       AuditLog[]
+}
+
+model RefreshToken {
+  id          String   @id @default(cuid())
+  tokenHash   String   @unique
+  userId      String
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  expiresAt   DateTime
+  revokedAt   DateTime?
+  createdAt   DateTime @default(now())
+}
+
+model Plan {
+  id             String         @id @default(cuid())
+  code           String         @unique
+  name           String
+  priceCents     Int
+  durationMonths Int
+  isActive       Boolean        @default(true)
+  createdAt      DateTime       @default(now())
+  updatedAt      DateTime       @updatedAt
+  subscriptions  Subscription[]
+  payments       Payment[]
+}
+
+model Subscription {
+  id        String   @id @default(cuid())
+  userId    String
+  planId    String
+  status    String   @default("ACTIVE")
+  startsAt  DateTime @default(now())
+  endsAt    DateTime
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  plan      Plan     @relation(fields: [planId], references: [id])
+
+  @@index([userId, status])
+}
+
+model Payment {
+  id             String   @id @default(cuid())
+  userId         String
+  planId         String
+  amountCents    Int
+  status         String   @default("PENDING")
+  method         String   @default("PIX")
+  pixPayload     String?
+  provider       String   @default("MANUAL")
+  providerRef    String?
+  paidAt         DateTime?
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+  user           User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  plan           Plan     @relation(fields: [planId], references: [id])
+
+  @@index([userId, status])
+}
+
+model Transaction {
+  id          String   @id @default(cuid())
+  userId      String
+  type        String
+  category    String
+  description String?
+  amountCents Int
+  date        DateTime
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, date])
+}
+
+model FileAnalysis {
+  id             String   @id @default(cuid())
+  userId         String
+  originalName   String
+  mimeType       String
+  sizeBytes      Int
+  rowsDetected   Int      @default(0)
+  totalCents     Int      @default(0)
+  dominantCategory String?
+  summaryJson    String?
+  createdAt      DateTime @default(now())
+  user           User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model AuditLog {
+  id        String   @id @default(cuid())
+  userId    String?
+  action    String
+  metadata  String?
+  ip        String?
+  createdAt DateTime @default(now())
+  user      User?    @relation(fields: [userId], references: [id], onDelete: SetNull)
+}
